@@ -6,7 +6,6 @@ import com.rookiefly.session.repository.SessionRepository;
 import com.rookiefly.session.strategy.CookieHttpSessionStrategy;
 import com.rookiefly.session.strategy.HttpSessionStrategy;
 import com.rookiefly.session.strategy.MultiHttpSessionStrategy;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -16,20 +15,23 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * filter拦截请求，包装request和response
+ */
 @SuppressWarnings("deprecation")
-@Order(SessionRepositoryFilter.DEFAULT_ORDER)
 public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerRequestFilter {
     public static final String SESSION_REPOSITORY_ATTR = SessionRepository.class.getName();
 
-    public static final int DEFAULT_ORDER = Integer.MIN_VALUE + 50;
-
-    private final SessionRepository<S> sessionRepository;
+    private SessionRepository<S> sessionRepository;
 
     private ServletContext servletContext;
 
+    /**
+     * http session生成策略
+     */
     private MultiHttpSessionStrategy httpSessionStrategy = new CookieHttpSessionStrategy();
 
-    public SessionRepositoryFilter(SessionRepository<S> sessionRepository) {
+    public void setSessionRepository(SessionRepository<S> sessionRepository) {
         if (sessionRepository == null) {
             throw new IllegalArgumentException("sessionRepository cannot be null");
         }
@@ -50,11 +52,24 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
         this.httpSessionStrategy = httpSessionStrategy;
     }
 
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    /**
+     * 拦截器主要功能
+     *
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws ServletException
+     * @throws IOException
+     */
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException,
+            IOException {
         request.setAttribute(SESSION_REPOSITORY_ATTR, sessionRepository);
 
-        SessionRepositoryRequestWrapper wrappedRequest = new SessionRepositoryRequestWrapper(request, response, servletContext);
-        SessionRepositoryResponseWrapper wrappedResponse = new SessionRepositoryResponseWrapper(wrappedRequest, response);
+        SessionRepositoryRequestWrapper wrappedRequest = new SessionRepositoryRequestWrapper(request, response,
+                servletContext);
+        SessionRepositoryResponseWrapper wrappedResponse = new SessionRepositoryResponseWrapper(wrappedRequest,
+                response);
 
         HttpServletRequest strategyRequest = httpSessionStrategy.wrapRequest(wrappedRequest, wrappedResponse);
         HttpServletResponse strategyResponse = httpSessionStrategy.wrapResponse(wrappedRequest, wrappedResponse);
@@ -66,6 +81,9 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
         }
     }
 
+    /**
+     * response的包装类
+     */
     private final class SessionRepositoryResponseWrapper extends OnCommittedResponseWrapper {
 
         private final SessionRepositoryRequestWrapper request;
@@ -87,6 +105,9 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
         }
     }
 
+    /**
+     * request包装类，替换session获取方式
+     */
     private final class SessionRepositoryRequestWrapper extends HttpServletRequestWrapper {
         private final String CURRENT_SESSION_ATTR = HttpServletRequestWrapper.class.getName();
         private Boolean requestedSessionIdValid;
@@ -94,14 +115,15 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
         private final HttpServletResponse response;
         private final ServletContext servletContext;
 
-        private SessionRepositoryRequestWrapper(HttpServletRequest request, HttpServletResponse response, ServletContext servletContext) {
+        private SessionRepositoryRequestWrapper(HttpServletRequest request, HttpServletResponse response,
+                                                ServletContext servletContext) {
             super(request);
             this.response = response;
             this.servletContext = servletContext;
         }
 
         /**
-         * Uses the HttpSessionStrategy to write the session id tot he response and persist the Session.
+         * Uses the HttpSessionStrategy to write the session id to response and persist the Session.
          */
         private void commitSession() {
             HttpSessionWrapper wrappedSession = getCurrentSession();
@@ -136,7 +158,8 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
             HttpSession session = getSession(false);
 
             if (session == null) {
-                throw new IllegalStateException("Cannot change session ID. There is no session associated with this request.");
+                throw new IllegalStateException(
+                        "Cannot change session ID. There is no session associated with this request.");
             }
 
             // eagerly get session attributes in case implementation lazily loads them
@@ -186,6 +209,12 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
             return getCurrentSession() == null && requestedSessionInvalidated;
         }
 
+        /**
+         * request包装类获取session
+         *
+         * @param create
+         * @return
+         */
         @Override
         public HttpSession getSession(boolean create) {
             HttpSessionWrapper currentSession = getCurrentSession();
@@ -231,10 +260,7 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
         }
 
         /**
-         * Allows creating an HttpSession from a Session instance.
-         *
-         * @author Rob Winch
-         * @since 1.0
+         * session包装类
          */
         private final class HttpSessionWrapper implements HttpSession {
             private S session;
@@ -373,23 +399,19 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
             return delegate.getRequestedSessionId(request);
         }
 
-        public void onNewSession(Session session, HttpServletRequest request,
-                                 HttpServletResponse response) {
+        public void onNewSession(Session session, HttpServletRequest request, HttpServletResponse response) {
             delegate.onNewSession(session, request, response);
         }
 
-        public void onInvalidateSession(HttpServletRequest request,
-                                        HttpServletResponse response) {
+        public void onInvalidateSession(HttpServletRequest request, HttpServletResponse response) {
             delegate.onInvalidateSession(request, response);
         }
 
-        public HttpServletRequest wrapRequest(HttpServletRequest request,
-                                              HttpServletResponse response) {
+        public HttpServletRequest wrapRequest(HttpServletRequest request, HttpServletResponse response) {
             return request;
         }
 
-        public HttpServletResponse wrapResponse(HttpServletRequest request,
-                                                HttpServletResponse response) {
+        public HttpServletResponse wrapResponse(HttpServletRequest request, HttpServletResponse response) {
             return response;
         }
     }

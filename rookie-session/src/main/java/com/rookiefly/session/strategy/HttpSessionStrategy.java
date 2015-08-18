@@ -7,9 +7,9 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface HttpSessionStrategy {
 
-	String getRequestedSessionId(HttpServletRequest request);
+    String getRequestedSessionId(HttpServletRequest request);
 
-	void onNewSession(Session session, HttpServletRequest request, HttpServletResponse response);
+    void onNewSession(Session session, HttpServletRequest request, HttpServletResponse response);
 
-	void onInvalidateSession(HttpServletRequest request, HttpServletResponse response);
+    void onInvalidateSession(HttpServletRequest request, HttpServletResponse response);
 }

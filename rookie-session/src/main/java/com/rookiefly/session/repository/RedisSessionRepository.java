@@ -7,14 +7,21 @@ import org.apache.commons.lang.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/**
+ * redis操作自定义session实现
+ */
 public class RedisSessionRepository implements SessionRepository<ExpiringSession> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public static final int DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS = 7200;
+    public static final int DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS = 7200;                                 //默认redis TTL时间，单位秒
 
     private Integer defaultMaxInactiveInterval = DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS;
 
+    /**
+     * redis client
+     */
     private RedisService cacheRedis;
 
     public RedisSessionRepository() {
@@ -56,7 +63,7 @@ public class RedisSessionRepository implements SessionRepository<ExpiringSession
     public void delete(String sessionId) {
         logger.debug("Deleting session {}", sessionId);
         try {
-            int result = cacheRedis.del(sessionId.getBytes());
+            cacheRedis.del(sessionId.getBytes());
         } catch (Exception e) {
             logger.error("Failed deleting {}", sessionId, e);
         }

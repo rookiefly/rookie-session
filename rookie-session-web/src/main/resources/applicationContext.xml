@@ -5,8 +5,13 @@
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<bean id="sessionRepositoryFilter" class="com.rookiefly.session.filter.SessionRepositoryFilter">
-		<constructor-arg ref="sessionRepository"></constructor-arg>
+		<property name="sessionRepository" ref="sessionRepository"/>
+		<!--<property name="httpSessionStrategy" ref="httpSessionStrategy"/>-->
 	</bean>
+
+	<!--	<bean id="httpSessionStrategy" class="com.kuaidadi.home.web.session.CookieHttpSessionStrategy">
+            <property name="defaultMaxInactiveInterval" value="7200"/>
+        </bean>-->
 
 	<bean id="sessionRepository" class="com.rookiefly.session.repository.RedisSessionRepository">
 		<!--<property name="cacheRedis" ref="cacheRedis"></property>-->

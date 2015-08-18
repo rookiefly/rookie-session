@@ -2,14 +2,14 @@ package com.rookiefly.session;
 
 public interface ExpiringSession extends Session {
 
-	long getCreationTime();
+    long getCreationTime();
 
-	long getLastAccessedTime();
+    long getLastAccessedTime();
 
-	void setMaxInactiveIntervalInSeconds(int interval);
+    void setMaxInactiveIntervalInSeconds(int interval);
 
-	int getMaxInactiveIntervalInSeconds();
+    int getMaxInactiveIntervalInSeconds();
 
-	boolean isExpired();
+    boolean isExpired();
 
 }
