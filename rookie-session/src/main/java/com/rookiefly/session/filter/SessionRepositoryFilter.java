@@ -18,7 +18,6 @@ import java.util.*;
 /**
  * filter拦截请求，包装request和response
  */
-@SuppressWarnings("deprecation")
 public class SessionRepositoryFilter extends OncePerRequestFilter {
     public static final String SESSION_REPOSITORY_ATTR = SessionRepository.class.getName();
 

@@ -6,7 +6,7 @@
 
     <!-- session替换拦截器 -->
     <bean id="sessionRepositoryFilter" class="com.rookiefly.session.filter.SessionRepositoryFilter">
-        <property name="sessionRepository" ref="sessionRepository"/>
+        <!-- <property name="sessionRepository" ref="sessionRepository"/>-->
         <!--<property name="httpSessionStrategy" ref="httpSessionStrategy"/>-->
     </bean>
 
@@ -25,7 +25,7 @@
         <property name="redisAddr" value="127.0.0.1:6379" />
     </bean>-->
 
-    <!-- J2Cache存储方案 -->
-    <bean id="sessionRepository" class="com.rookiefly.session.repository.J2CacheSessionRepository">
-    </bean>
+    <!-- J2Cache存储方案，默认方案 -->
+<!--    <bean id="sessionRepository" class="com.rookiefly.session.repository.J2CacheSessionRepository">
+    </bean>-->
 </beans>
