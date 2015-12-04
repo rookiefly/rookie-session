@@ -4,119 +4,96 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
- * redis·şÎñ½Ó¿Ú
- *
+ * redisæœåŠ¡æ¥å£
  */
 public interface RedisService {
     /**
-     * ÔÚredisÖĞÉèÖÃÒ»¸öÖµ,O(1)
-     * 
-     * @param key
-     *            ¼ü
-     * @param value
-     *            Öµ
-     * @return ×´Ì¬Âë
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * åœ¨redisä¸­è®¾ç½®ä¸€ä¸ªå€¼,O(1)
+     *
+     * @param key   é”®
+     * @param value å€¼
+     * @return çŠ¶æ€ç 
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     String set(String key, String value);
 
     /**
-     * ÉèÖÃÒ»¸öÖµ,Í¬Ê±Ö¸¶¨¹ıÆÚÊ±¼ä,O(1)
-     * 
-     * @param key
-     *            ¼ü
-     * @param value
-     *            Öµ
-     * @param expireSeconds
-     *            ¹ıÆÚÊ±¼ä(Ãë)
-     * @return ×´Ì¬Âë
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * è®¾ç½®ä¸€ä¸ªå€¼,åŒæ—¶æŒ‡å®šè¿‡æœŸæ—¶é—´,O(1)
+     *
+     * @param key           é”®
+     * @param value         å€¼
+     * @param expireSeconds è¿‡æœŸæ—¶é—´(ç§’)
+     * @return çŠ¶æ€ç 
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     String set(String key, String value, int expireSeconds);
 
     /**
-     * ÉèÖÃÒ»¸öÖµ,Í¬Ê±Ö¸¶¨¹ıÆÚÊ±¼ä,O(1)
-     * 
-     * @param key
-     *            ¼ü ×Ö½ÚÊı×é
-     * @param value
-     *            Öµ ×Ö½ÚÊı×é
-     * @param expireSeconds
-     *            ¹ıÆÚÊ±¼ä(Ãë)   
-     * @return ×´Ì¬Âë
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * è®¾ç½®ä¸€ä¸ªå€¼,åŒæ—¶æŒ‡å®šè¿‡æœŸæ—¶é—´,O(1)
+     *
+     * @param key           é”® å­—èŠ‚æ•°ç»„
+     * @param value         å€¼ å­—èŠ‚æ•°ç»„
+     * @param expireSeconds è¿‡æœŸæ—¶é—´(ç§’)
+     * @return çŠ¶æ€ç 
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     String set(byte[] key, byte[] value, int expireSeconds);
 
     /**
-     * ´ÓredisÖĞÈ¡»ØºÍkey¹ØÁªµÄ×Ö·û´®,O(1)
-     * 
-     * @param key   ×Ö½ÚÊı×é
-     * @return ÓëkeyÏà¹ØÁªµÄ×Ö·û´®,Èôkey²»´æÔÚ,Ôò·µ»Ønull
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * ä»redisä¸­å–å›å’Œkeyå…³è”çš„å­—ç¬¦ä¸²,O(1)
+     *
+     * @param key å­—èŠ‚æ•°ç»„
+     * @return ä¸keyç›¸å…³è”çš„å­—ç¬¦ä¸², è‹¥keyä¸å­˜åœ¨, åˆ™è¿”å›null
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     byte[] get(byte[] key);
 
     /**
-     * É¾³ıÒ»¸ökey,O(1)
-     * 
-     * @param key
-     *            ÒªÉ¾³ıµÄkey
-     * @return ±»É¾µÄkeyÊıÁ¿
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * åˆ é™¤ä¸€ä¸ªkey,O(1)
+     *
+     * @param key è¦åˆ é™¤çš„key
+     * @return è¢«åˆ çš„keyæ•°é‡
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     int del(byte[] key);
 
     /**
-     * ÉèÖÃÒ»¸ö¼üµÄÏà¶Ô¹ıÆÚÊ±¼ä,O(1)
-     * 
-     * @param key
-     *            ¼ü
-     * @param seconds
-     *            ¹ıÆÚÃëÊı
-     * @return true ÉèÖÃ³É¹¦,false ÉèÖÃÊ§°Ü
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * è®¾ç½®ä¸€ä¸ªé”®çš„ç›¸å¯¹è¿‡æœŸæ—¶é—´,O(1)
+     *
+     * @param key     é”®
+     * @param seconds è¿‡æœŸç§’æ•°
+     * @return true è®¾ç½®æˆåŠŸ,false è®¾ç½®å¤±è´¥
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     boolean expire(final byte[] key, final int seconds);
 
     /**
-     * ÉèÖÃÒ»¸öÖµ½øset
-     * 
-     * @param key
-     *            ¼ü
-     * @param value
-     *            Öµ
-     * @return ×´Ì¬Âë
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * è®¾ç½®ä¸€ä¸ªå€¼è¿›set
+     *
+     * @param key   é”®
+     * @param value å€¼
+     * @return çŠ¶æ€ç 
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     Long addToSet(String key, String value);
 
     /**
-     * ´ÓsetÖĞÉ¾³ıÒ»¸öÖµ
-     * 
-     * @param key
-     *            ¼ü
-     * @param value
-     *            Öµ
-     * @return ×´Ì¬Âë
+     * ä»setä¸­åˆ é™¤ä¸€ä¸ªå€¼
+     *
+     * @param key   é”®
+     * @param value å€¼
+     * @return çŠ¶æ€ç 
      * @author zhengsibi
-     * 
      */
     public Long removeFormSet(String key, String value);
 
     /**
-     * ÉèÖÃÒ»×éÖµ
-     * 
+     * è®¾ç½®ä¸€ç»„å€¼
+     *
      * @param key
      * @param value
      * @return
@@ -124,100 +101,83 @@ public interface RedisService {
     public Long addToSet(String key, String... value);
 
     /**
-     * »ñÈ¡Ò»¸ösetµÄÔªËØÊı
-     * 
+     * è·å–ä¸€ä¸ªsetçš„å…ƒç´ æ•°
+     *
      * @param key
      * @return int (number of set)
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     int getSetCount(String key);
 
     /**
-     * ¸ù¾İÒ»¸ökeyÖµ»ñÈ¡Ò»¸öset¼¯ºÏµÄÔªËØ,O(N)
-     * 
+     * æ ¹æ®ä¸€ä¸ªkeyå€¼è·å–ä¸€ä¸ªseté›†åˆçš„å…ƒç´ ,O(N)
+     *
      * @param key
      * @return
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
-     * 
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     Set<String> getSetMembers(String key);
 
     /**
-     * Ëæ»ú·µ»ØsetÖĞµÄÒ»¸öÔªËØ,O(1)
-     * 
-     * @param key
-     *            ¼ü
-     * @return Ëæ»ú´ÓsetÖĞÑ¡È¡µÄÒ»¸öÔªËØ
-     * 
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * éšæœºè¿”å›setä¸­çš„ä¸€ä¸ªå…ƒç´ ,O(1)
+     *
+     * @param key é”®
+     * @return éšæœºä»setä¸­é€‰å–çš„ä¸€ä¸ªå…ƒç´ 
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     String getRandomMember(String key);
 
     /**
-     * ÈôÒ»¸ö¼ü²»´æÔÚ,Ôò½«¼üÉèÖÃ³É¶ÔÓ¦µÄÖµ,O(1)
-     * 
-     * @param key
-     *            ¼ü
-     * @param value
-     *            Öµ
-     * @return true ÉèÖÃ³É¹¦ false ¼üÒÑ´æÔÚ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * è‹¥ä¸€ä¸ªé”®ä¸å­˜åœ¨,åˆ™å°†é”®è®¾ç½®æˆå¯¹åº”çš„å€¼,O(1)
+     *
+     * @param key   é”®
+     * @param value å€¼
+     * @return true è®¾ç½®æˆåŠŸ false é”®å·²å­˜åœ¨
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     boolean setIfNotExist(String key, String value);
 
     /**
-     * ÈôÒ»¸ö¼ü²»´æÔÚ,Ôò½«¼üÉèÖÃ³É¶ÔÓ¦µÄÖµºÍ¹ıÆÚÊ±¼ä
-     * 
-     * @param key
-     *            ¼ü
-     * @param value
-     *            Öµ
-     * @param expireMilliSeconds
-     *            ¹ıÆÚÊ±¼äºÁÃë
-     * @return true ÉèÖÃ³É¹¦ false ¼üÒÑ´æÔÚ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * è‹¥ä¸€ä¸ªé”®ä¸å­˜åœ¨,åˆ™å°†é”®è®¾ç½®æˆå¯¹åº”çš„å€¼å’Œè¿‡æœŸæ—¶é—´
+     *
+     * @param key                é”®
+     * @param value              å€¼
+     * @param expireMilliSeconds è¿‡æœŸæ—¶é—´æ¯«ç§’
+     * @return true è®¾ç½®æˆåŠŸ false é”®å·²å­˜åœ¨
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     boolean setIfAbsent(String key, String value, int expireMilliSeconds);
 
     /**
-     * ´ÓredisÖĞÈ¡»ØºÍkey¹ØÁªµÄ×Ö·û´®,O(1)
-     * 
+     * ä»redisä¸­å–å›å’Œkeyå…³è”çš„å­—ç¬¦ä¸²,O(1)
+     *
      * @param key
-     * @return ÓëkeyÏà¹ØÁªµÄ×Ö·û´®,Èôkey²»´æÔÚ,Ôò·µ»Ønull
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * @return ä¸keyç›¸å…³è”çš„å­—ç¬¦ä¸², è‹¥keyä¸å­˜åœ¨, åˆ™è¿”å›null
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     String get(String key);
 
     /**
-     * »ñÈ¡Ò»ÅúÖµ,O(n),nÎª¼üµÄ¸öÊı
-     * 
-     * @param keys
-     *            Ò»Åú¼ü
-     * @return ¶ÔÓ¦µÄÒ»ÅúÖµ,ÈôÄ³¸ö¼ü²»´æÔÚ,Ôò¶ÔÓ¦µÄÖµÎªnull
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * è·å–ä¸€æ‰¹å€¼,O(n),nä¸ºé”®çš„ä¸ªæ•°
+     *
+     * @param keys ä¸€æ‰¹é”®
+     * @return å¯¹åº”çš„ä¸€æ‰¹å€¼, è‹¥æŸä¸ªé”®ä¸å­˜åœ¨, åˆ™å¯¹åº”çš„å€¼ä¸ºnull
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     List<String> gets(String... keys);
 
     /**
-     * ÅĞ¶ÏkeyÊÇ·ñ´æÔÚ,O(1)
-     * 
+     * åˆ¤æ–­keyæ˜¯å¦å­˜åœ¨,O(1)
+     *
      * @param key
-     * @return true ´æÔÚ,false ²»´æÔÚ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * @return true å­˜åœ¨,false ä¸å­˜åœ¨
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     boolean exists(String key);
 
     /**
-     * »ñÈ¡Ö¸¶¨KeyµÄÖ¸¶¨³ÉÔ±µÄ·ÖÊı¡£O(1)
-     * 
+     * è·å–æŒ‡å®šKeyçš„æŒ‡å®šæˆå‘˜çš„åˆ†æ•°ã€‚O(1)
+     *
      * @param key
      * @param value
      * @return
@@ -225,230 +185,205 @@ public interface RedisService {
     Double getSetScore(String key, String value);
 
     /**
-     * sortedset keyÖĞ´æ´¢µÄ×Ö¶Îvalue ÅÅĞò·ÖÖµÊÇµ±Ç°Ê±¼ä´Á
-     * 
+     * sortedset keyä¸­å­˜å‚¨çš„å­—æ®µvalue æ’åºåˆ†å€¼æ˜¯å½“å‰æ—¶é—´æˆ³
+     *
+     * @param key
+     * @param value
      */
     void addSortedSet(String key, String value);
 
     /**
-     * É¾³ıÒ»Åúkey,O(1)
-     * 
-     * @param keys
-     *            ÒªÉ¾³ıµÄkey
-     * @return ±»É¾µÄkeyÊıÁ¿
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * åˆ é™¤ä¸€æ‰¹key,O(1)
+     *
+     * @param keys è¦åˆ é™¤çš„key
+     * @return è¢«åˆ çš„keyæ•°é‡
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     int del(String... keys);
 
     /**
-     * ÉèÖÃÒ»¸ö¼üµÄÏà¶Ô¹ıÆÚÊ±¼ä,O(1)
-     * 
-     * @param key
-     *            ¼ü
-     * @param seconds
-     *            ¹ıÆÚÃëÊı
-     * @return true ÉèÖÃ³É¹¦,false ÉèÖÃÊ§°Ü
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * è®¾ç½®ä¸€ä¸ªé”®çš„ç›¸å¯¹è¿‡æœŸæ—¶é—´,O(1)
+     *
+     * @param key     é”®
+     * @param seconds è¿‡æœŸç§’æ•°
+     * @return true è®¾ç½®æˆåŠŸ,false è®¾ç½®å¤±è´¥
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     boolean expire(String key, int seconds);
 
     /**
-     * ÉèÖÃÒ»¸ö¼üµÄ¾ø¶Ô¹ıÆÚÊ±¼ä,O(1)
-     * 
-     * @param key
-     *            ¼ü
-     * @param unixTime
-     *            unixÊ±¼ä´Á(Ãë)
-     * @return ÊÇ·ñ³É¹¦
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * è®¾ç½®ä¸€ä¸ªé”®çš„ç»å¯¹è¿‡æœŸæ—¶é—´,O(1)
+     *
+     * @param key      é”®
+     * @param unixTime unixæ—¶é—´æˆ³(ç§’)
+     * @return æ˜¯å¦æˆåŠŸ
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     boolean expireAt(String key, long unixTime);
 
     /**
-     * Ô­×ÓĞÔµØ½«Ò»¸ö¼üÉèÖÃ³ÉĞÂÖµ,Í¬Ê±·µ»Ø¾ÉÖµ,O(1)
-     * 
-     * @param key
-     *            ¼ü
-     * @param value
-     *            ÒªÉèÖÃµÄÖµ
-     * @return ¾ÉÖµ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * åŸå­æ€§åœ°å°†ä¸€ä¸ªé”®è®¾ç½®æˆæ–°å€¼,åŒæ—¶è¿”å›æ—§å€¼,O(1)
+     *
+     * @param key   é”®
+     * @param value è¦è®¾ç½®çš„å€¼
+     * @return æ—§å€¼
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     String getSet(String key, String value);
 
     /**
-     * ½«Ò»¸ö¼üµÄÖµ(Ô­×ÓĞÔµØ)Ôö1
-     * 
-     * @param key
-     *            ¼ü
-     * @return Ôö¼ÓºóµÄÖµ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * å°†ä¸€ä¸ªé”®çš„å€¼(åŸå­æ€§åœ°)å¢1
+     *
+     * @param key é”®
+     * @return å¢åŠ åçš„å€¼
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     long incr(String key);
 
     /**
-     * ½«Ò»¸ö¼üµÄÖµ(Ô­×ÓĞÔµØ)Ôö¼Ón
-     * 
-     * @param key
-     *            ¼ü
-     * @param increment
-     *            ÔöÁ¿
-     * @return Ôö¼ÓºóµÄÖµ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * å°†ä¸€ä¸ªé”®çš„å€¼(åŸå­æ€§åœ°)å¢åŠ n
+     *
+     * @param key       é”®
+     * @param increment å¢é‡
+     * @return å¢åŠ åçš„å€¼
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     long incrBy(String key, int increment);
 
     /**
-     * ½«Ò»¸ö¼üµÄÖµ(Ô­×ÓĞÔµØ)Ôö¼Ón
-     * 
-     * @param key
-     *            ¼ü
-     * @param increment
-     *            ÔöÁ¿
-     * @return Ôö¼ÓºóµÄÖµ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * å°†ä¸€ä¸ªé”®çš„å€¼(åŸå­æ€§åœ°)å¢åŠ n
+     *
+     * @param key       é”®
+     * @param increment å¢é‡
+     * @return å¢åŠ åçš„å€¼
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     Double incrByFloat(String key, double increment);
 
     /**
-     * ½«Ò»¸ö¼üµÄÖµ(Ô­×ÓĞÔµØ)¼õ1
-     * 
-     * @param key
-     *            ¼ü
-     * @return ¼õÉÙºóµÄÖµ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * å°†ä¸€ä¸ªé”®çš„å€¼(åŸå­æ€§åœ°)å‡1
+     *
+     * @param key é”®
+     * @return å‡å°‘åçš„å€¼
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     long decr(String key);
 
     /**
-     * ½«Ò»¸ö¼üµÄÖµ(Ô­×ÓĞÔµØ)¼õn
-     * 
-     * @param key
-     *            ¼ü
-     * @param decrement
-     *            ¼õÉÙµÄÁ¿
-     * @return ¼õÉÙºóµÄÖµ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * å°†ä¸€ä¸ªé”®çš„å€¼(åŸå­æ€§åœ°)å‡n
+     *
+     * @param key       é”®
+     * @param decrement å‡å°‘çš„é‡
+     * @return å‡å°‘åçš„å€¼
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     long decrBy(String key, int decrement);
 
     /**
-     * ÔÚhashtableÖĞÉèÖÃÒ»¸öÖµ,O(1)
-     * 
-     * @param key
-     *            hashtableµÄkey
-     * @param field
-     *            hashtableµÄfield
-     * @param value
-     *            ÒªÉèÖÃµÄÖµ
-     * @return 0£º¸üĞÂÁËÔ­À´µÄÖµ,1:ĞÂ½¨ÁËÒ»¸öÖµ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * åœ¨hashtableä¸­è®¾ç½®ä¸€ä¸ªå€¼,O(1)
+     *
+     * @param key   hashtableçš„key
+     * @param field hashtableçš„field
+     * @param value è¦è®¾ç½®çš„å€¼
+     * @return 0ï¼šæ›´æ–°äº†åŸæ¥çš„å€¼,1:æ–°å»ºäº†ä¸€ä¸ªå€¼
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     int hset(String key, String field, String value);
 
     /**
-     * ÔÚhashtableÖĞÉèÖÃÒ»Åú¼üÖµ¶Ô,O(N),NÎª¼üÖµ¶Ô¸öÊı
-     * 
-     * @param key
-     *            hashtableµÄ¼ü
-     * @param fields
-     *            ÒªÉèÖÃµÄÒ»Åú¼üÖµ¶Ô
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * åœ¨hashtableä¸­è®¾ç½®ä¸€æ‰¹é”®å€¼å¯¹,O(N),Nä¸ºé”®å€¼å¯¹ä¸ªæ•°
+     *
+     * @param key    hashtableçš„é”®
+     * @param fields è¦è®¾ç½®çš„ä¸€æ‰¹é”®å€¼å¯¹
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     void hsets(String key, Map<String, String> fields);
 
     /**
-     * ÈôÒ»¸öhashtalbeµÄfiled²»´æÔÚ,Ôò½«ÆäÉèÖÃÎªÒ»¸öÖµ ,·ñÔò²»ÉèÖÃ
-     * 
-     * @param key
-     *            hashtalbeµÄkey
-     * @param field
-     *            hashtableµÄ field
-     * @param value
-     *            ÒªÉèÖÃµÄÖµ
-     * @return true ÉèÖÃ³É¹¦,false fieldÒÑ´æÔÚ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * è‹¥ä¸€ä¸ªhashtalbeçš„filedä¸å­˜åœ¨,åˆ™å°†å…¶è®¾ç½®ä¸ºä¸€ä¸ªå€¼ ,å¦åˆ™ä¸è®¾ç½®
+     *
+     * @param key   hashtalbeçš„key
+     * @param field hashtableçš„ field
+     * @param value è¦è®¾ç½®çš„å€¼
+     * @return true è®¾ç½®æˆåŠŸ,false fieldå·²å­˜åœ¨
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     boolean hsetIfNotExists(String key, String field, String value);
 
     /**
-     * »ñÈ¡hashtableÖĞÒ»¸öfield¶ÔÓ¦µÄÖµ
-     * 
-     * @param key
-     *            hashtableµÄ¼ü
-     * @param field
-     *            hashtableµÄfield
-     * @return field¶ÔÓ¦µÄÖµ
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * è·å–hashtableä¸­ä¸€ä¸ªfieldå¯¹åº”çš„å€¼
+     *
+     * @param key   hashtableçš„é”®
+     * @param field hashtableçš„field
+     * @return fieldå¯¹åº”çš„å€¼
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     String hget(String key, String field);
 
     /**
-     * »ñÈ¡Ò»¸öhasht
-     * 
+     * è·å–ä¸€ä¸ªhasht
+     *
      * @param key
      * @param fields
-     * @return fields¶ÔÓ¦µÄÖµ
+     * @return fieldså¯¹åº”çš„å€¼
      */
     List<String> hgets(String key, String... fields);
 
     /**
-     * »ñÈ¡hashtableÖĞËùÓĞµÄ¼üÖµ¶Ô
-     * 
-     * @param key
-     *            hashtableµÄkey
-     * @return hashtableµÄËùÓĞ¼üÖµ¶Ô,ÈôÓëÒ»¸ökey¹ØÁªµÄhashtable²»´æÔÚ,Ôò·µ»ØemptyµÄmap
+     * è·å–hashtableä¸­æ‰€æœ‰çš„é”®å€¼å¯¹
+     *
+     * @param key hashtableçš„key
+     * @return hashtableçš„æ‰€æœ‰é”®å€¼å¯¹, è‹¥ä¸ä¸€ä¸ªkeyå…³è”çš„hashtableä¸å­˜åœ¨, åˆ™è¿”å›emptyçš„map
      */
     Map<String, String> hgetAll(String key);
 
     /**
-     * É¾³ıÖ¸¶¨keyËùÔÚµÄhashtableÖĞÄ³¸öfield
-     * 
-     * @param key
-     *            Ö¸ÏòhashtableµÄkey
-     * @param field
-     *            hashtableµÄfield
+     * åˆ é™¤æŒ‡å®škeyæ‰€åœ¨çš„hashtableä¸­æŸä¸ªfield
+     *
+     * @param key   æŒ‡å‘hashtableçš„key
+     * @param field hashtableçš„field
      * @author zhengsibi
      */
     void hdel(String key, String field);
 
     /**
-     * É¾³ıÖ¸¶¨keyËùÔÚµÄhashtableÖĞ¶à¸öfield
-     * 
+     * åˆ é™¤æŒ‡å®škeyæ‰€åœ¨çš„hashtableä¸­å¤šä¸ªfield
+     *
      * @param key
      * @param fields
      */
     void hdel(String key, String... fields);
 
     /**
-     * ÏòÒ»¸öÍ¨µÀ·¢²¼Ò»ÌõÏûÏ¢,¶©ÔÄ¸ÃÍ¨µÀµÄ¿Í»§¶Ë½«»áÊÜµ½ÕâÌõÏûÏ¢
-     * 
-     * @param channel
-     *            Í¨µÀ
-     * @param message
-     *            Òª·¢ËÍµÄÏûÏ¢
-     * @throws JedisConnectionException
-     *             ÈôºÍredis·şÎñÆ÷µÄÁ¬½Ó²»³É¹¦
+     * cas(compare and set)
+     * è‹¥ä¸€ä¸ªé”®çš„æ—§å€¼ä¸ºæœŸæœ›çš„å€¼ä¹‹ä¸€,åˆ™å°†è¯¥é”®çš„å€¼æ›´æ”¹æˆæ–°å€¼,å¦åˆ™ä¸æ›´æ”¹,æ— è®ºæ˜¯å¦å°†é”®å€¼æˆåŠŸæ›´æ–°æˆæ–°å€¼,éƒ½å°†è¿”å›è¯¥é”®æ“ä½œåçš„å€¼
+     * æ­¤æ“ä½œä¸ºåŸå­æ“ä½œ,å¯ä»¥ä¿è¯åœ¨å¹¶å‘æƒ…å†µä¸‹çš„æ­£ç¡®æ€§
+     *
+     * @param key                 é”®
+     * @param expectingOriginVals æœŸæœ›çš„æ—§å€¼
+     * @param toBe                æœŸæœ›æ›´æ–°çš„å€¼
+     * @return casç»“æœ, è¯¥æ¬¡casæ˜¯å¦æˆåŠŸæ›´æ–°æˆæœŸæœ›çš„æ–°å€¼å¯ä»¥æŸ¥çœ‹{@link CASResult#isSuccess()}
+     * ,è¯¥é”®æœ€ç»ˆçš„å€¼å¯ä»¥æŸ¥çœ‹{@link CASResult#getFinalResult()}
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
+     */
+    CASResult<String> cas(String key, Set<String> expectingOriginVals, String toBe);
+
+
+    void subscribe(JedisPubSub jedisPubSub, String... channels);
+
+    /**
+     * å‘ä¸€ä¸ªé€šé“å‘å¸ƒä¸€æ¡æ¶ˆæ¯,è®¢é˜…è¯¥é€šé“çš„å®¢æˆ·ç«¯å°†ä¼šå—åˆ°è¿™æ¡æ¶ˆæ¯
+     *
+     * @param channel é€šé“
+     * @param message è¦å‘é€çš„æ¶ˆæ¯
+     * @throws JedisConnectionException è‹¥å’ŒredisæœåŠ¡å™¨çš„è¿æ¥ä¸æˆåŠŸ
      */
     void publish(String channel, String message);
 
     /**
-     * ·µ»ØredisÖĞ´æ´¢µÄÀàĞÍ one of "none","set","list","string" "hash" key is not
+     * è¿”å›redisä¸­å­˜å‚¨çš„ç±»å‹ one of "none","set","list","string" "hash" key is not
      * exsits retrun none
-     * 
+     *
      * @param key
      * @return
      */
@@ -456,7 +391,7 @@ public interface RedisService {
 
     /**
      * Return all the fields in a hash.
-     * 
+     *
      * @param key
      * @return
      */
@@ -465,7 +400,7 @@ public interface RedisService {
     /**
      * Set the respective fields to the respective values. HMSET replaces old
      * values with new values.
-     * 
+     *
      * @param key
      * @param hash
      * @return
@@ -474,24 +409,21 @@ public interface RedisService {
 
     /**
      * <pre>
-     * ·µ»ØminuendÓëkeyµÄÔ­ÖµµÄ²î(ÈôkeyÎ´¹ØÁª¹ıÈÎºÎÖµ,ÔòÈÏÎªkeyµÄÔ­ÖµÎª0),²¢½«keyµÄÔ­Öµ¸üĞÂÎªminuend
-     * ´Ë·½·¨¿ÉÓÃÓÚÔÚ·Ö²¼Ê½»·¾³ÏÂ¼ÆËãÁ¬ĞøµÄÔöÁ¿(ÀıÈç¼ÆÊ±)
+     * è¿”å›minuendä¸keyçš„åŸå€¼çš„å·®(è‹¥keyæœªå…³è”è¿‡ä»»ä½•å€¼,åˆ™è®¤ä¸ºkeyçš„åŸå€¼ä¸º0),å¹¶å°†keyçš„åŸå€¼æ›´æ–°ä¸ºminuend
+     * æ­¤æ–¹æ³•å¯ç”¨äºåœ¨åˆ†å¸ƒå¼ç¯å¢ƒä¸‹è®¡ç®—è¿ç»­çš„å¢é‡(ä¾‹å¦‚è®¡æ—¶)
      * </pre>
-     * 
-     * @param minuend
-     *            ±»¼õÊı
-     * @param key
-     *            ¼õÊı¶ÔÓ¦µÄkey
-     * @return minuendÓëkeyµÄÔ­ÖµµÄ²î
+     *
+     * @param minuend è¢«å‡æ•°
+     * @param key     å‡æ•°å¯¹åº”çš„key
+     * @return minuendä¸keyçš„åŸå€¼çš„å·®
      */
     long substractedAndSet(long minuend, String key);
 
     /**
-     * Ôö¼ÓÈ¡ttlÊ±¼ä·½·¨
-     * 
-     * @param key
-     *            ¶ÔÓ¦µÄkey
-     * @return »º´æÊ§Ğ§µÄÃëÊı
+     * å¢åŠ å–ttlæ—¶é—´æ–¹æ³•
+     *
+     * @param key å¯¹åº”çš„key
+     * @return ç¼“å­˜å¤±æ•ˆçš„ç§’æ•°
      */
     public long ttl(String key);
 
@@ -501,7 +433,7 @@ public interface RedisService {
 
     long zadd(String key, String member, double score);
 
-    long zadd(String key, Map<Double, String> members);
+    long zadd(String key, Map<String, Double> members);
 
     Set<String> zrange(String key, long start, long end);
 
@@ -519,7 +451,7 @@ public interface RedisService {
      * exist or holds a string, the value is set to 0 before applying the
      * operation. Since the value argument is signed you can use this command to
      * perform both increments and decrements.
-     * 
+     *
      * @param key
      * @param member
      * @return
@@ -532,7 +464,7 @@ public interface RedisService {
      * exist or holds a string, the value is set to 0 before applying the
      * operation. Since the value argument is signed you can use this command to
      * perform both increments and decrements.
-     * 
+     *
      * @param key
      * @param member
      * @param dlt
@@ -543,9 +475,9 @@ public interface RedisService {
     /**
      * Return the sorted set cardinality (number of elements). If the key does
      * not exist 0 is returned, like for empty sorted sets.
-     * 
+     * <p/>
      * Time complexity O(1)
-     * 
+     *
      * @param key
      * @return
      */
@@ -556,7 +488,7 @@ public interface RedisService {
      * member was not a member of the set no operation is performed. If key does
      * not not hold a set value an error is returned. Time complexity O(log(N))
      * with N being the number of elements in the sorted set
-     * 
+     *
      * @param key
      * @param members
      */
@@ -566,9 +498,9 @@ public interface RedisService {
      * Return the length of the list stored at the specified key. If the key
      * does not exist zero is returned (the same behaviour as for empty lists).
      * If the value stored at key is not a list an error is returned.
-     * <p>
+     * <p/>
      * Time complexity: O(1)
-     * 
+     *
      * @param key
      * @return The length of the list.
      */
@@ -578,39 +510,39 @@ public interface RedisService {
      * Return the specified elements of the list stored at the specified key.
      * Start and end are zero-based indexes. 0 is the first element of the list
      * (the list head), 1 the next element and so on.
-     * <p>
+     * <p/>
      * For example LRANGE foobar 0 2 will return the first three elements of the
      * list.
-     * <p>
+     * <p/>
      * start and end can also be negative numbers indicating offsets from the
      * end of the list. For example -1 is the last element of the list, -2 the
      * penultimate element and so on.
-     * <p>
+     * <p/>
      * <b>Consistency with range functions in various programming languages</b>
-     * <p>
+     * <p/>
      * Note that if you have a list of numbers from 0 to 100, LRANGE 0 10 will
      * return 11 elements, that is, rightmost item is included. This may or may
      * not be consistent with behavior of range-related functions in your
      * programming language of choice (think Ruby's Range.new, Array#slice or
      * Python's range() function).
-     * <p>
+     * <p/>
      * LRANGE behavior is consistent with one of Tcl.
-     * <p>
+     * <p/>
      * <b>Out-of-range indexes</b>
-     * <p>
+     * <p/>
      * Indexes out of range will not produce an error: if start is over the end
      * of the list, or start > end, an empty list is returned. If end is over
      * the end of the list Redis will threat it just like the last element of
      * the list.
-     * <p>
+     * <p/>
      * Time complexity: O(start+n) (with n being the length of the range and
      * start being the start offset)
-     * 
+     *
      * @param key
      * @param start
      * @param end
      * @return Multi bulk reply, specifically a list of elements in the
-     *         specified range.
+     * specified range.
      */
     public List<String> lrange(String key, final long start, final long end);
 
@@ -620,16 +552,15 @@ public interface RedisService {
      * example if the source list contains the elements "a","b","c" and the
      * destination list contains the elements "foo","bar" after an RPOPLPUSH
      * command the content of the two lists will be "a","b" and "c","foo","bar".
-     * <p>
+     * <p/>
      * If the key does not exist or the list is already empty the special value
      * 'nil' is returned. If the srckey and dstkey are the same the operation is
      * equivalent to removing the last element from the list and pusing it as
      * first element of the list, so it's a "list rotation" command.
-     * <p>
+     * <p/>
      * Time complexity: O(1)
-     * 
-     * @param srckey
-     * @param dstkey
+     *
+     * @param key
      * @return Bulk reply
      */
     public String rpop(final String key);
@@ -638,14 +569,13 @@ public interface RedisService {
      * Atomically return and remove the first (LPOP) or last (RPOP) element of
      * the list. For example if the list contains the elements "a","b","c" LPOP
      * will return "a" and the list will become "b","c".
-     * <p>
+     * <p/>
      * If the key does not exist or the list is already empty the special value
      * 'nil' is returned.
-     * 
-     * @see #rpop(String)
-     * 
+     *
      * @param key
      * @return Bulk reply
+     * @see #rpop(String)
      */
     public String lpop(final String key);
 
@@ -654,13 +584,13 @@ public interface RedisService {
      * stored at key. If the key does not exist an empty list is created just
      * before the append operation. If the key exists but is not a List an error
      * is returned.
-     * <p>
+     * <p/>
      * Time complexity: O(1)
-     * 
+     *
      * @param key
-     * @param strings
+     * @param string
      * @return Integer reply, specifically, the number of elements inside the
-     *         list after the push operation.
+     * list after the push operation.
      */
     public Long rpush(final String key, final String string);
 
@@ -669,21 +599,21 @@ public interface RedisService {
      * stored at key. If the key does not exist an empty list is created just
      * before the append operation. If the key exists but is not a List an error
      * is returned.
-     * <p>
+     * <p/>
      * Time complexity: O(1)
-     * 
+     *
      * @param key
-     * @param strings
+     * @param string
      * @return Integer reply, specifically, the number of elements inside the
-     *         list after the push operation.
+     * list after the push operation.
      */
     public Long lpush(final String key, final String string);
 
     /**
      * if redis ${key} exists and value in ${set} return true else false
-     * 
+     * <p/>
      * add by david.ling 2014-08-27
-     * 
+     *
      * @param key
      * @param value
      * @return
@@ -692,9 +622,9 @@ public interface RedisService {
 
     /**
      * set add member
-     * 
+     * <p/>
      * add by david.ling 2014-08-27
-     * 
+     *
      * @param key
      * @param value
      * @return
@@ -702,24 +632,22 @@ public interface RedisService {
     public Long addSet(String key, String value);
 
     /**
-     * 
      * @param channel
      * @param message
      */
     void originalPublish(String channel, String message);
 
     /**
-     * ¸ù¾İÍ¨Åä·û»ñÈ¡ËùÓĞkey Ê±¼ä¸´ÔÓ¶È: O(N), N ÎªÊı¾İ¿âÖĞ key µÄÊıÁ¿¡£
-     * 
-     * @param pattern
-     *            keyÍ¨Åä·û
+     * æ ¹æ®é€šé…ç¬¦è·å–æ‰€æœ‰key æ—¶é—´å¤æ‚åº¦: O(N), N ä¸ºæ•°æ®åº“ä¸­ key çš„æ•°é‡ã€‚
+     *
+     * @param pattern keyé€šé…ç¬¦
      * @return
      */
     Set<String> keys(String pattern);
 
     /**
-     * ÅúÁ¿lpush
-     * 
+     * æ‰¹é‡lpush
+     *
      * @param key
      * @param valueList
      * @return
@@ -727,8 +655,8 @@ public interface RedisService {
     public int batchLpush(String key, List<String> valueList);
 
     /**
-     * ÅúÁ¿zrangeByScore
-     * 
+     * æ‰¹é‡zrangeByScore
+     *
      * @param keys
      * @param min
      * @param max
@@ -740,8 +668,8 @@ public interface RedisService {
                                                           int count);
 
     /**
-     * ÅúÁ¿zrangeByScore
-     * 
+     * æ‰¹é‡zrangeByScore
+     *
      * @param keys
      * @param min
      * @param max
@@ -754,5 +682,7 @@ public interface RedisService {
     public Long rpush(final byte[] key, final byte[]... strings);
 
     public byte[] lindex(final byte[] key, final long index);
+
+    public int batchHsets(Map<String, Map<String, String>> valuesMap);
 
 }

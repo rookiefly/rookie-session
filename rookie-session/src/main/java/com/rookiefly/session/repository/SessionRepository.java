@@ -4,15 +4,14 @@ import com.rookiefly.session.Session;
 
 /**
  * session操作的接口类
- * @param <S>
  */
-public interface SessionRepository<S extends Session> {
+public interface SessionRepository {
 
-    S createSession();
+    Session createSession();
 
-    void save(S session);
+    void save(Session session);
 
-    S getSession(String id);
+    Session getSession(String id);
 
     void delete(String id);
 }

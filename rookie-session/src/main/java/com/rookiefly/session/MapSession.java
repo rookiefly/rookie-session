@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * map实现session
  */
-public final class MapSession implements ExpiringSession, Serializable {
+public final class MapSession implements Session, Serializable {
 
     public static final int DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS = 1800;
 
@@ -28,7 +28,7 @@ public final class MapSession implements ExpiringSession, Serializable {
         this.id = sessionId;
     }
 
-    public MapSession(ExpiringSession session) {
+    public MapSession(Session session) {
         if (session == null) {
             throw new IllegalArgumentException("session cannot be null");
         }

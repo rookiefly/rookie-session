@@ -17,4 +17,14 @@ public interface Session extends Serializable {
     void setAttribute(String attributeName, Object attributeValue);
 
     void removeAttribute(String attributeName);
+
+    long getCreationTime();
+
+    long getLastAccessedTime();
+
+    void setMaxInactiveIntervalInSeconds(int interval);
+
+    int getMaxInactiveIntervalInSeconds();
+
+    boolean isExpired();
 }

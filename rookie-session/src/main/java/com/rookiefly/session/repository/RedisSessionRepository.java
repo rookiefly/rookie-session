@@ -1,7 +1,7 @@
 package com.rookiefly.session.repository;
 
-import com.rookiefly.session.ExpiringSession;
 import com.rookiefly.session.MapSession;
+import com.rookiefly.session.Session;
 import com.rookiefly.session.redis.RedisService;
 import org.apache.commons.lang.SerializationUtils;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * redis操作自定义session实现
  */
-public class RedisSessionRepository implements SessionRepository<ExpiringSession> {
+public class RedisSessionRepository implements SessionRepository {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -39,7 +39,7 @@ public class RedisSessionRepository implements SessionRepository<ExpiringSession
         this.defaultMaxInactiveInterval = Integer.valueOf(defaultMaxInactiveInterval);
     }
 
-    public void save(ExpiringSession session) {
+    public void save(Session session) {
         try {
             logger.debug("Adding session {}", session);
             byte[] bs = SerializationUtils.serialize(session);
@@ -49,11 +49,11 @@ public class RedisSessionRepository implements SessionRepository<ExpiringSession
         }
     }
 
-    public ExpiringSession getSession(String sessionId) {
-        ExpiringSession session = null;
+    public Session getSession(String sessionId) {
+        Session session = null;
         try {
             byte[] bs = cacheRedis.get(sessionId.getBytes());
-            session = (ExpiringSession) SerializationUtils.deserialize(bs);
+            session = (Session) SerializationUtils.deserialize(bs);
         } catch (Exception e) {
             logger.error("Failed fetching {} ", sessionId, e);
         }
@@ -69,16 +69,16 @@ public class RedisSessionRepository implements SessionRepository<ExpiringSession
         }
     }
 
-    public ExpiringSession createSession() {
-        ExpiringSession session = new MapSession();
+    public Session createSession() {
+        Session session = new MapSession();
         if (defaultMaxInactiveInterval != null) {
             session.setMaxInactiveIntervalInSeconds(defaultMaxInactiveInterval);
         }
         return session;
     }
 
-    public ExpiringSession createSession(String sessionId) {
-        ExpiringSession session = new MapSession(sessionId);
+    public Session createSession(String sessionId) {
+        Session session = new MapSession(sessionId);
         if (defaultMaxInactiveInterval != null) {
             session.setMaxInactiveIntervalInSeconds(defaultMaxInactiveInterval);
         }

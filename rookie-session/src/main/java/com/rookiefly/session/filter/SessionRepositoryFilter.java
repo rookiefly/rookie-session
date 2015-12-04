@@ -1,7 +1,7 @@
 package com.rookiefly.session.filter;
 
-import com.rookiefly.session.ExpiringSession;
 import com.rookiefly.session.Session;
+import com.rookiefly.session.repository.J2CacheSessionRepository;
 import com.rookiefly.session.repository.SessionRepository;
 import com.rookiefly.session.strategy.CookieHttpSessionStrategy;
 import com.rookiefly.session.strategy.HttpSessionStrategy;
@@ -19,10 +19,10 @@ import java.util.*;
  * filter拦截请求，包装request和response
  */
 @SuppressWarnings("deprecation")
-public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerRequestFilter {
+public class SessionRepositoryFilter extends OncePerRequestFilter {
     public static final String SESSION_REPOSITORY_ATTR = SessionRepository.class.getName();
 
-    private SessionRepository<S> sessionRepository;
+    private SessionRepository sessionRepository = new J2CacheSessionRepository();
 
     private ServletContext servletContext;
 
@@ -31,7 +31,7 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
      */
     private MultiHttpSessionStrategy httpSessionStrategy = new CookieHttpSessionStrategy();
 
-    public void setSessionRepository(SessionRepository<S> sessionRepository) {
+    public void setSessionRepository(SessionRepository sessionRepository) {
         if (sessionRepository == null) {
             throw new IllegalArgumentException("sessionRepository cannot be null");
         }
@@ -132,7 +132,7 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
                     httpSessionStrategy.onInvalidateSession(this, response);
                 }
             } else {
-                S session = wrappedSession.session;
+                Session session = wrappedSession.session;
                 sessionRepository.save(session);
                 if (!isRequestedSessionIdValid() || !session.getId().equals(getRequestedSessionId())) {
                     httpSessionStrategy.onNewSession(session, this, response);
@@ -191,14 +191,14 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
         public boolean isRequestedSessionIdValid() {
             if (requestedSessionIdValid == null) {
                 String sessionId = getRequestedSessionId();
-                S session = sessionId == null ? null : sessionRepository.getSession(sessionId);
+                Session session = sessionId == null ? null : sessionRepository.getSession(sessionId);
                 return isRequestedSessionIdValid(session);
             }
 
             return requestedSessionIdValid;
         }
 
-        private boolean isRequestedSessionIdValid(S session) {
+        private boolean isRequestedSessionIdValid(Session session) {
             if (requestedSessionIdValid == null) {
                 requestedSessionIdValid = session != null;
             }
@@ -223,7 +223,7 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
             }
             String requestedSessionId = getRequestedSessionId();
             if (requestedSessionId != null) {
-                S session = sessionRepository.getSession(requestedSessionId);
+                Session session = sessionRepository.getSession(requestedSessionId);
                 if (session != null) {
                     this.requestedSessionIdValid = true;
                     currentSession = new HttpSessionWrapper(session, getServletContext());
@@ -235,7 +235,7 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
             if (!create) {
                 return null;
             }
-            S session = sessionRepository.createSession();
+            Session session = sessionRepository.createSession();
             currentSession = new HttpSessionWrapper(session, getServletContext());
             setCurrentSession(currentSession);
             return currentSession;
@@ -263,12 +263,12 @@ public class SessionRepositoryFilter<S extends ExpiringSession> extends OncePerR
          * session包装类
          */
         private final class HttpSessionWrapper implements HttpSession {
-            private S session;
+            private Session session;
             private final ServletContext servletContext;
             private boolean invalidated;
             private boolean old;
 
-            public HttpSessionWrapper(S session, ServletContext servletContext) {
+            public HttpSessionWrapper(Session session, ServletContext servletContext) {
                 this.session = session;
                 this.servletContext = servletContext;
             }
