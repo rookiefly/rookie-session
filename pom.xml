@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <spring.version>3.2.13.RELEASE</spring.version>
+        <spring.version>4.3.22.RELEASE</spring.version>
     </properties>
 
     <dependencies>
@@ -99,7 +99,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.7</version>
+            <version>1.2.55</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
