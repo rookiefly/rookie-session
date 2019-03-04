@@ -1,6 +1,6 @@
 # rookie-session
 
-###uml
-![](https://github.com/rookiefly/rookie-session/blob/master/session.jpg)
+### uml
+![session](https://github.com/rookiefly/rookie-session/blob/master/session.jpg)
    
-![](https://github.com/rookiefly/rookie-session/blob/master/sso.jpg)
+![sso](https://github.com/rookiefly/rookie-session/blob/master/sso.jpg)
